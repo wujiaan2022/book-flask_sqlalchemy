@@ -3,14 +3,36 @@
   <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Home Page</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+      }
+      .book {
+        margin: 10px 0;
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        display: flex;
+        align-items: center;
+      }
+      .book img {
+        max-width: 100px;
+        margin-right: 20px;
+      }
+    </style>
   </head>
   <body>
+    <h1>Welcome to the Library</h1>
 
     {% for book in books %}
-    <div> <h3>{{ book.title }}</h3>
+    <div class="book">
+      <img src="{{ book.cover_url }}" alt="Cover Image of {{ book.title }}" onerror="this.src='/static/default-cover.png'">
+      <div>
+        <h3>{{ book.title }}</h3>
+        <p><strong>Author:</strong> {{ book.author.name }}</p>
+      </div>
     </div>
     {% endfor %}
-
   </body>
 </html>

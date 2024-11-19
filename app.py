@@ -2,6 +2,7 @@
 from flask import Flask, render_template, request
 from flask_sqlalchemy import SQLAlchemy
 from data_models import db, Author, Book
+from extensions import db  # Import db from extensions
 
 
 # Create an instance of the Flask application
@@ -105,6 +106,19 @@ def add_book():
 
     # Render the template with authors and success message
     return render_template('add_book.html', authors=authors, success_message=success_message)
+
+
+@app.route('/')
+def home():
+    """
+    Displays the home page with a list of books and their authors.
+    Each book also displays a cover image fetched using its ISBN.
+    """
+    # Query all books and their authors
+    books = Book.query.all()
+
+    # Render the home.html template and pass the list of books
+    return render_template('home.html', books=books)
 
 
  

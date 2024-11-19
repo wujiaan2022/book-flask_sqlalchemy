@@ -1,6 +1,5 @@
-from flask_sqlalchemy import SQLAlchemy
+from extensions import db
 
-db = SQLAlchemy()
 
 class Author(db.Model):
     """
@@ -35,44 +34,38 @@ class Author(db.Model):
         return f"Author: {self.name} (Born: {self.birth_date}, Died: {self.date_of_death or 'N/A'})"
 
 
-
 class Book(db.Model):
     """
-    Represents a book in the library database.
+        Represents a book in the library database.
 
-    Attributes:
-        id (int): The unique identifier for the book (Primary Key).
-        isbn (str): The ISBN of the book. This field is required.
-        title (str): The title of the book. This field is required.
-        publication_year (int): The year the book was published. This field is optional.
-        author_id (int): The foreign key that connects the book to an author. This field is required.
-    Methods:
-        __repr__(): Returns a detailed string representation of the Book instance for debugging.
-        __str__(): Returns a user-friendly string representation of the Book instance.
-    """
-    # Define the table name (optional, defaults to the class name)
+        Attributes:
+            id (int): The unique identifier for the book (Primary Key).
+            isbn (str): The ISBN of the book. This field is required.
+            title (str): The title of the book. This field is required.
+            publication_year (int): The year the book was published. This field is optional.
+            author_id (int): The foreign key that connects the book to an author. This field is required.
+        Methods:
+            __repr__(): Returns a detailed string representation of the Book instance for debugging.
+            __str__(): Returns a user-friendly string representation of the Book instance.
+        """
     __tablename__ = 'books'
-    
-    # Attributes (columns)
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)  # Auto-incrementing PK
-    isbn = db.Column(db.String(13), nullable=False, unique=True)  # ISBN (String, required, unique)
-    title = db.Column(db.String(200), nullable=False)  # Title (String, required)
-    publication_year = db.Column(db.Integer, nullable=True)  # Publication year (Integer, optional)
-    author_id = db.Column(db.Integer, db.ForeignKey('authors.id'), nullable=False)  # FK to authors table
 
-    # Define relationship with Author
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(200), nullable=False)
+    isbn = db.Column(db.String(13), nullable=False, unique=True)
+    publication_year = db.Column(db.Integer, nullable=True)
+    author_id = db.Column(db.Integer, db.ForeignKey('authors.id'), nullable=False)
+
+    # Relationship with Author
     author = db.relationship('Author', backref=db.backref('books', lazy=True))
 
-    # Customize string representation
-    def __repr__(self):
-        """Returns a detailed string representation of the Book instance for debugging."""
-        return (f"<Book(id={self.id}, isbn='{self.isbn}', title='{self.title}', "
-                f"publication_year={self.publication_year}, author_id={self.author_id})>")
-    
-    def __str__(self):
-        """Returns a user-friendly string representation of the Book instance."""
-        return f"Book: {self.title} (ISBN: {self.isbn}, Published: {self.publication_year or 'N/A'})"
+    @property
+    def cover_url(self):
+        """
+        Returns the URL for the book's cover image using the Open Library Covers API.
+        Falls back to a default cover image if the ISBN is missing or invalid.
+        """
+        if self.isbn:
+            return f"https://covers.openlibrary.org/b/isbn/{self.isbn}-L.jpg"
+        return "/static/default-cover.png"
 
-
-with app.app_context():
-  db.create_all()
