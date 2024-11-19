@@ -3,14 +3,16 @@ from flask import Flask, render_template, request
 from flask_sqlalchemy import SQLAlchemy
 from data_models import db, Author, Book
 from extensions import db  # Import db from extensions
-
+import os
 
 # Create an instance of the Flask application
 app = Flask(__name__)
 
 
-# Configure the SQLAlchemy database URI to use an SQLite database located at 'data/library.sqlite'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///data/library.sqlite'
+BASE_DIR = os.path.abspath(os.path.dirname(__file__))  # Absolute path to the directory containing initialize_db.py
+DATABASE_PATH = os.path.join(BASE_DIR, 'data', 'library.sqlite')
+app.config['SQLALCHEMY_DATABASE_URI'] = f"sqlite:///{DATABASE_PATH}"
+
 
 # Initialize the SQLAlchemy object with the Flask app instance
 db.init_app(app)
