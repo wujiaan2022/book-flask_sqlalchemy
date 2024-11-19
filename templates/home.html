@@ -3,36 +3,29 @@
   <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Home Page</title>
-    <style>
-      body {
-        font-family: Arial, sans-serif;
-      }
-      .book {
-        margin: 10px 0;
-        padding: 10px;
-        border: 1px solid #ddd;
-        border-radius: 5px;
-        display: flex;
-        align-items: center;
-      }
-      .book img {
-        max-width: 100px;
-        margin-right: 20px;
-      }
-    </style>
+    <title>Library</title>
   </head>
   <body>
     <h1>Welcome to the Library</h1>
 
-    {% for book in books %}
-    <div class="book">
-      <img src="{{ book.cover_url }}" alt="Cover Image of {{ book.title }}" onerror="this.src='/static/default-cover.png'">
-      <div>
-        <h3>{{ book.title }}</h3>
-        <p><strong>Author:</strong> {{ book.author.name }}</p>
-      </div>
-    </div>
-    {% endfor %}
+    <!-- Sorting Dropdown -->
+    <form action="/" method="GET">
+      <label for="sort">Sort by:</label>
+      <select name="sort" id="sort">
+        <option value="title">Title</option>
+        <option value="author">Author</option>
+      </select>
+      <button type="submit">Sort</button>
+    </form>
+
+    <!-- Display Books -->
+    <ul>
+      {% for book in books %}
+      <li>
+        <img src="{{ book.cover_url }}" alt="Cover Image of {{ book.title }}" style="width:100px;height:auto;">
+        <strong>{{ book.title }}</strong> by {{ book.author.name }}
+      </li>
+      {% endfor %}
+    </ul>
   </body>
 </html>

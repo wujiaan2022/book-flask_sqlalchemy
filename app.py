@@ -113,14 +113,23 @@ def add_book():
 @app.route('/')
 def home():
     """
-    Displays the home page with a list of books and their authors.
-    Each book also displays a cover image fetched using its ISBN.
+    Displays the home page with a list of books, sortable by title or author name.
     """
-    # Query all books and their authors
-    books = Book.query.all()
+    # Get sorting criteria from query parameters
+    sort_by = request.args.get('sort', 'title')  # Default to sorting by title
 
-    # Render the home.html template and pass the list of books
+    # Query books with sorting
+    if sort_by == 'author':
+        books = Book.query.join(Author).order_by(Author.name).all()
+    else:  # Default to sorting by title
+        books = Book.query.order_by(Book.title).all()
+
+    # Render the home.html template and pass the sorted books
     return render_template('home.html', books=books)
+
+
+if __name__ == '__main__':
+    app.run(debug=True)
 
 
  
