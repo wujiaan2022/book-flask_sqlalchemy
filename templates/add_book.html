@@ -7,9 +7,39 @@
   </head>
   <body>
 
-  <form action="/add_author" method="POST">
-  <!-- Add the form here -->
-  </form>
+  <h1>Add a New Book</h1>
+
+    <!-- Display success message if present -->
+    {% if success_message %}
+      <p style="color: green;">{{ success_message }}</p>
+    {% endif %}
+
+    <!-- Book Form -->
+    <form action="/add_book" method="POST">
+      <!-- Book Title -->
+      <label for="title">Book Title:</label>
+      <input type="text" id="title" name="title" required><br><br>
+
+      <!-- ISBN -->
+      <label for="isbn">ISBN:</label>
+      <input type="text" id="isbn" name="isbn" required><br><br>
+
+      <!-- Publication Year -->
+      <label for="publication_year">Publication Year:</label>
+      <input type="number" id="publication_year" name="publication_year" required><br><br>
+
+      <!-- Author Dropdown -->
+      <label for="author_id">Author:</label>
+      <select id="author_id" name="author_id" required>
+        <option value="" disabled selected>Select an Author</option>
+        {% for author in authors %}
+          <option value="{{ author.id }}">{{ author.name }}</option>
+        {% endfor %}
+      </select><br><br>
+
+      <!-- Submit Button -->
+      <button type="submit">Add Book</button>
+    </form>
 
   </body>
 </html>
