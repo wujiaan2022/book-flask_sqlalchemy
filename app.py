@@ -1,5 +1,5 @@
 
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, redirect, url_for, flash
 from flask_sqlalchemy import SQLAlchemy
 from data_models import db, Author, Book
 from extensions import db  # Import db from extensions
@@ -142,6 +142,32 @@ def home():
     # Render the template with the sorted and filtered books
     return render_template('home.html', books=books, sort=sort_by, search_query=search_query)
 
+
+
+@app.route('/book/<int:book_id>/delete', methods=['POST'])
+def delete_book(book_id):
+    """
+    Deletes a specific book from the database.
+    If the book's author has no other books, the author is also deleted.
+    Redirects to the homepage with a success message after deletion.
+    """
+    book = Book.query.get_or_404(book_id)  # Retrieve the book or return 404 if not found
+    try:
+        # Check if the author has any other books
+        author = book.author
+        db.session.delete(book)  # Delete the book
+
+        # Delete the author if they have no other books
+        if not Book.query.filter_by(author_id=author.id).first():
+            db.session.delete(author)
+
+        db.session.commit()  # Commit changes
+        flash(f"Book '{book.title}' was successfully deleted.", "success")
+    except Exception as e:
+        db.session.rollback()  # Rollback in case of an error
+        flash(f"An error occurred: {str(e)}", "danger")
+
+    return redirect(url_for('home'))  # Redirect to the homepage
 
 
 if __name__ == '__main__':

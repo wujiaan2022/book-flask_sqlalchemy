@@ -32,11 +32,16 @@
         <li>
           <img src="{{ book.cover_url }}" alt="Cover Image of {{ book.title }}" style="width:100px;height:auto;">
           <strong>{{ book.title }}</strong> by {{ book.author.name }}
+          <!-- Delete Book Button -->
+          <form action="{{ url_for('delete_book', book_id=book.id) }}" method="POST" style="display:inline;">
+            <button type="submit" onclick="return confirm('Are you sure you want to delete {{ book.title }}?')">Delete Book</button>
+          </form>
         </li>
         {% endfor %}
       {% else %}
-        <p>No books found matching your search criteria.</p>
+        <p>No books found.</p>
       {% endif %}
     </ul>
+
   </body>
 </html>
