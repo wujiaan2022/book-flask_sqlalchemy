@@ -113,19 +113,35 @@ def add_book():
 @app.route('/')
 def home():
     """
-    Displays the home page with a list of books, sortable by title or author name.
+    Displays the home page with a list of books.
+    Supports sorting by title or author and searching for books by title or author name.
     """
-    # Get sorting criteria from query parameters
-    sort_by = request.args.get('sort', 'title')  # Default to sorting by title
+    # Get query parameters
+    sort_by = request.args.get('sort', 'title')  # Sorting criteria
+    search_query = request.args.get('search', '')  # Search query
 
-    # Query books with sorting
+    # Build the base query
+    query = Book.query.join(Author)
+
+    # Apply search filter
+    if search_query:
+        query = query.filter(
+            (Book.title.ilike(f"%{search_query}%")) |  # Search by book title
+            (Author.name.ilike(f"%{search_query}%"))  # Search by author name
+        )
+
+    # Apply sorting
     if sort_by == 'author':
-        books = Book.query.join(Author).order_by(Author.name).all()
+        query = query.order_by(Author.name)
     else:  # Default to sorting by title
-        books = Book.query.order_by(Book.title).all()
+        query = query.order_by(Book.title)
 
-    # Render the home.html template and pass the sorted books
-    return render_template('home.html', books=books)
+    # Fetch books from the database
+    books = query.all()
+
+    # Render the template with the sorted and filtered books
+    return render_template('home.html', books=books, sort=sort_by, search_query=search_query)
+
 
 
 if __name__ == '__main__':
